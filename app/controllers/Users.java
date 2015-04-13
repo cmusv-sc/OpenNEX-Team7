@@ -1,6 +1,6 @@
 package controllers;
 
-import models.Account;
+import models.User;
 import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -19,7 +19,7 @@ public class Users extends Controller {
      */
     public static Result login() {
         return ok(
-                login.render(form(Account.class))
+                login.render(form(User.class))
         );
     }
 
@@ -27,7 +27,7 @@ public class Users extends Controller {
      * Handle login form submission.
      */
     public static Result authenticate() {
-        Form<Account> loginForm = form(Account.class).bindFromRequest();
+        Form<User> loginForm = form(User.class).bindFromRequest();
 
         if (loginForm.hasErrors()) {
             flash("error", loginForm.errors().toString());
@@ -37,9 +37,9 @@ public class Users extends Controller {
         String email = loginForm.get().email;
         String password = loginForm.get().password;
 
-        Account checkAccount = Account.get(email, password);
+        User checkUser = User.get(email, password);
 
-        if (checkAccount == null) {
+        if (checkUser == null) {
             flash("error", "Invalid email or password.");
             return badRequest(login.render(loginForm));
         }
@@ -67,7 +67,7 @@ public class Users extends Controller {
      */
     public static Result signup() {
         return ok(
-                signup.render(form(Account.class))
+                signup.render(form(User.class))
         );
     }
 
@@ -75,19 +75,19 @@ public class Users extends Controller {
      * Handle signup form submission.
      */
     public static Result register() {
-        Form<Account> signupForm = form(Account.class).bindFromRequest();
+        Form<User> signupForm = form(User.class).bindFromRequest();
 
         if (signupForm.hasErrors()) {
             flash("error", signupForm.errors().toString());
             return badRequest(signup.render(signupForm));
         }
 
-        Account account = new Account();
-        account.email = signupForm.get().email;
-        account.password = signupForm.get().password;
-        account.save();
+        User user = new User();
+        user.email = signupForm.get().email;
+        user.password = signupForm.get().password;
+        user.save();
 
-        flash("success", "New account has been created.");
+        flash("success", "New user has been created.");
         return redirect(
                 routes.Users.login()
         );

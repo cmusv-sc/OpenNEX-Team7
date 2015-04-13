@@ -23,7 +23,7 @@ public class Workflow extends Model {
     public String content;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    public Account owner;
+    public User owner;
 
     public static Finder<Long, Workflow> find = new Finder<Long, Workflow>(
             Long.class, Workflow.class
