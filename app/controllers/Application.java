@@ -1,6 +1,6 @@
 package controllers;
 
-import models.Accounts;
+import models.Account;
 import play.data.*;
 import play.mvc.*;
 import views.html.*;
@@ -16,11 +16,18 @@ public class Application extends Controller {
         public String password;
 
         public String validate() {
-            if (Accounts.authenticate(email, password) == null) {
-                return "Invalid user or password";
+            if (Account.authenticate(email, password) == null) {
+                return "Invalid email or password.";
             }
             return null;
         }
+
+    }
+
+    public static class Signup {
+
+        public String email;
+        public String password;
 
     }
 
@@ -59,10 +66,40 @@ public class Application extends Controller {
      */
     public static Result logout() {
         session().clear();
-        flash("success", "You've been logged out");
+        flash("success", "You've been logged out.");
         return redirect(
                 routes.Application.login()
         );
+    }
+
+    /**
+     * Signup page.
+     */
+    public static Result signup() {
+        return ok(
+                signup.render(form(Signup.class))
+        );
+    }
+
+    /**
+     * Handle signup form submission.
+     */
+    public static Result register() {
+        Form<Signup> signupForm = form(Signup.class).bindFromRequest();
+        if (signupForm.hasErrors()) {
+            return badRequest(signup.render(signupForm));
+        } else {
+            Account account = new Account();
+            account.email = signupForm.get().email;
+            account.password = signupForm.get().password;
+            account.save();
+
+            flash("success", "New account has been created.");
+
+            return redirect(
+                    routes.Application.login()
+            );
+        }
     }
 
 }

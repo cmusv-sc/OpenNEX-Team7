@@ -14,7 +14,7 @@ import java.util.List;
  */
 
 @Entity
-public class Accounts extends Model {
+public class Account extends Model {
 
     @Id
     @Constraints.Min(10)
@@ -29,11 +29,11 @@ public class Accounts extends Model {
     @OneToMany(cascade = CascadeType.ALL)
     public List<Workflow> workflows;
 
-    public static Finder<Long, Accounts> find = new Finder<Long, Accounts>(
-            Long.class, Accounts.class
+    public static Finder<Long, Account> find = new Finder<Long, Account>(
+            Long.class, Account.class
     );
 
-    public static Accounts authenticate(String email, String password) {
+    public static Account authenticate(String email, String password) {
 
         System.out.println(email + " " + password); // Check if form data is passed.
 
