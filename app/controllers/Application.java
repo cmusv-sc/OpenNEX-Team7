@@ -76,7 +76,7 @@ public class Application extends Controller {
      */
     public static Result register() {
         Form<Account> signupForm = form(Account.class).bindFromRequest();
-        
+
         if (signupForm.hasErrors()) {
             flash("error", signupForm.errors().toString());
             return badRequest(signup.render(signupForm));
@@ -88,7 +88,6 @@ public class Application extends Controller {
         account.save();
 
         flash("success", "New account has been created.");
-
         return redirect(
                 routes.Application.login()
         );
