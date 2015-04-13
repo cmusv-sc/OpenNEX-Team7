@@ -76,20 +76,22 @@ public class Application extends Controller {
      */
     public static Result register() {
         Form<Account> signupForm = form(Account.class).bindFromRequest();
+        
         if (signupForm.hasErrors()) {
+            flash("error", signupForm.errors().toString());
             return badRequest(signup.render(signupForm));
-        } else {
-            Account account = new Account();
-            account.email = signupForm.get().email;
-            account.password = signupForm.get().password;
-            account.save();
-
-            flash("success", "New account has been created.");
-
-            return redirect(
-                    routes.Application.login()
-            );
         }
+
+        Account account = new Account();
+        account.email = signupForm.get().email;
+        account.password = signupForm.get().password;
+        account.save();
+
+        flash("success", "New account has been created.");
+
+        return redirect(
+                routes.Application.login()
+        );
     }
 
 }
