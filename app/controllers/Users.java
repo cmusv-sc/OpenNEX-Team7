@@ -4,8 +4,8 @@ import models.User;
 import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Result;
-import views.html.login;
-import views.html.signup;
+import views.html.users.login;
+import views.html.users.signup;
 
 import static play.data.Form.form;
 

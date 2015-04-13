@@ -19,6 +19,8 @@ public class Workflow extends Model {
     @Constraints.Required
     public String name;
 
+    public String description;
+
     @Constraints.Required
     public String content;
 
