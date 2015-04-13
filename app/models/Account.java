@@ -33,7 +33,7 @@ public class Account extends Model {
             Long.class, Account.class
     );
 
-    public static Account authenticate(String email, String password) {
+    public static Account get(String email, String password) {
 
         System.out.println(email + " " + password); // Check if form data is passed.
 
@@ -42,6 +42,14 @@ public class Account extends Model {
                 .eq("password", password)
                 .findUnique();
 
+    }
+
+    public String validate() {
+        if ((email == null) || (password == null)) {
+            return "Email or password cannot be blank.";
+        }
+
+        return null;
     }
 
 }

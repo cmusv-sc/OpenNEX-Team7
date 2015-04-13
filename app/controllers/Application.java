@@ -4,32 +4,10 @@ import models.Account;
 import play.data.*;
 import play.mvc.*;
 import views.html.*;
+
 import static play.data.Form.*;
 
 public class Application extends Controller {
-
-    // -- Authentication
-
-    public static class Login {
-
-        public String email;
-        public String password;
-
-        public String validate() {
-            if (Account.authenticate(email, password) == null) {
-                return "Invalid email or password.";
-            }
-            return null;
-        }
-
-    }
-
-    public static class Signup {
-
-        public String email;
-        public String password;
-
-    }
 
     @Security.Authenticated(Secured.class)
     public static Result index() {
@@ -41,7 +19,7 @@ public class Application extends Controller {
      */
     public static Result login() {
         return ok(
-                login.render(form(Login.class))
+                login.render(form(Account.class))
         );
     }
 
@@ -49,16 +27,28 @@ public class Application extends Controller {
      * Handle login form submission.
      */
     public static Result authenticate() {
-        Form<Login> loginForm = form(Login.class).bindFromRequest();
+        Form<Account> loginForm = form(Account.class).bindFromRequest();
+
         if (loginForm.hasErrors()) {
+            flash("error", loginForm.errors().toString());
             return badRequest(login.render(loginForm));
-        } else {
-            session().clear();
-            session("email", loginForm.get().email);
-            return redirect(
-                    routes.Application.index()
-            );
         }
+
+        String email = loginForm.get().email;
+        String password = loginForm.get().password;
+
+        Account checkAccount = Account.get(email, password);
+
+        if (checkAccount == null) {
+            flash("error", "Invalid email or password.");
+            return badRequest(login.render(loginForm));
+        }
+
+        session().clear();
+        session("email", email);
+        return redirect(
+                routes.Application.index()
+        );
     }
 
     /**
@@ -77,7 +67,7 @@ public class Application extends Controller {
      */
     public static Result signup() {
         return ok(
-                signup.render(form(Signup.class))
+                signup.render(form(Account.class))
         );
     }
 
@@ -85,7 +75,7 @@ public class Application extends Controller {
      * Handle signup form submission.
      */
     public static Result register() {
-        Form<Signup> signupForm = form(Signup.class).bindFromRequest();
+        Form<Account> signupForm = form(Account.class).bindFromRequest();
         if (signupForm.hasErrors()) {
             return badRequest(signup.render(signupForm));
         } else {
