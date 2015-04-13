@@ -5,6 +5,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
 import views.html.workflows.index;
+import views.html.workflows.create;
 
 import java.util.List;
 
@@ -22,6 +23,16 @@ public class Workflows extends Controller {
 
         return ok(
                 index.render(workflows)
+        );
+    }
+
+    /**
+     * Index page.
+     */
+    @Security.Authenticated(Secured.class)
+    public static Result create() {
+        return ok(
+                create.render()
         );
     }
 
