@@ -3,7 +3,7 @@
 @main(title = "Log In") {
     <h1>Log In</h1>
 
-    @helper.form(routes.Application.authenticate) {
+    @helper.form(routes.Users.authenticate) {
         <div class="form-group">
             <p class="input-group">
                 <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
@@ -22,7 +22,7 @@
         <div class="form-group">
             <div style="border-top: 1px solid#888; padding-top:15px; font-size:85%" >
                 Don't have an account?
-                <a href="@routes.Application.signup">
+                <a href="@routes.Users.signup">
                     Sign Up Here
                 </a>
             </div>
