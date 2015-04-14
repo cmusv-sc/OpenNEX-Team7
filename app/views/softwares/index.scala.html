@@ -1,0 +1,22 @@
+@(softwares: List[Software])
+
+@main(title = "Softwares") {
+    <h1>Softwares <a class="btn btn-success" href="@routes.Softwares.create" role="button">Add New</a></h1>
+
+    <table class="table table-striped">
+        <tr>
+            <td>ID</td>
+            <td>Name</td>
+            <td>Description</td>
+            <td>Owner</td>
+        </tr>
+        @for(software <- softwares){
+        <tr>
+            <td>@software.id</td>
+            <td>@software.name</td>
+            <td>@software.description</td>
+            <td>@software.owner.email</td>
+        </tr>
+        }
+    </table>
+}

@@ -29,6 +29,9 @@ public class User extends Model {
     @OneToMany(cascade = CascadeType.ALL)
     public List<Workflow> workflows;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    public List<Software> softwares;
+
     public static Finder<Long, User> find = new Finder<Long, User>(
             Long.class, User.class
     );
