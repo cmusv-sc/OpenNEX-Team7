@@ -1,0 +1,22 @@
+@(services: List[Service])
+
+@main(title = "Services") {
+    <h1>Services <a class="btn btn-success" href="@routes.ServiceController.create" role="button">Add New</a></h1>
+
+    <table class="table table-striped">
+        <tr>
+            <td>ID</td>
+            <td>Name</td>
+            <td>Description</td>
+            <td>Owner</td>
+        </tr>
+        @for(service <- services){
+        <tr>
+            <td>@service.id</td>
+            <td>@service.name</td>
+            <td>@service.description</td>
+            <td>@service.owner.email</td>
+        </tr>
+        }
+    </table>
+}

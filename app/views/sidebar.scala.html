@@ -6,10 +6,10 @@
     </li>
     @if(request.username != null) {
     <li>
-        <a href="@routes.Workflows.index">Workflows</a>
+        <a href="@routes.WorkflowController.index">Workflows</a>
     </li>
     <li>
-        <a href="@routes.Softwares.index">Softwares</a>
+        <a href="@routes.ServiceController.index">Services</a>
     </li>
     }
     <li>
@@ -20,8 +20,8 @@
 <ul class="sidebar-nav bottom">
     <li>@request.username</li>
     @if(request.username != null) {
-    <li><a href="@routes.Users.logout">Log Out</a></li>
+    <li><a href="@routes.UserController.signOut">Sign Out</a></li>
     } else {
-    <li><a href="@routes.Users.login">Log In</a></li>
+    <li><a href="@routes.UserController.signIn">Sign In</a></li>
     }
 </ul>

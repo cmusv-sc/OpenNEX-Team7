@@ -13,7 +13,7 @@ import javax.persistence.ManyToOne;
  */
 
 @Entity
-public class Software extends Model {
+public class Service extends Model {
 
     @Id
     @Constraints.Min(10)
@@ -27,11 +27,11 @@ public class Software extends Model {
     @Constraints.Required
     public String url;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne()
     public User owner;
 
-    public static Finder<Long, Software> find = new Finder<Long, Software>(
-            Long.class, Software.class
+    public static Finder<Long, Service> find = new Finder<Long, Service>(
+            Long.class, Service.class
     );
 
 }

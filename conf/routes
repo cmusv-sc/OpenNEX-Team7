@@ -6,21 +6,21 @@
 GET     /                           controllers.Application.index()
 
 # Login page
-GET     /login                      controllers.Users.login()
-POST    /login                      controllers.Users.authenticate()
-GET     /logout                     controllers.Users.logout()
-GET     /signup                     controllers.Users.signup()
-POST    /signup                     controllers.Users.register()
+GET     /signin                     controllers.UserController.signIn()
+POST    /signin                     controllers.UserController.authenticate()
+GET     /signout                    controllers.UserController.signOut()
+GET     /signup                     controllers.UserController.signUp()
+POST    /signup                     controllers.UserController.store()
 
 # Workflow page
-GET     /workflows                  controllers.Workflows.index()
-GET     /workflows/create           controllers.Workflows.create()
-POST    /workflows/create           controllers.Workflows.store()
+GET     /workflows                  controllers.WorkflowController.index()
+GET     /workflows/create           controllers.WorkflowController.create()
+POST    /workflows/create           controllers.WorkflowController.store()
 
-# Software page
-GET     /softwares                  controllers.Softwares.index()
-GET     /softwares/create           controllers.Softwares.create()
-POST    /softwares/create           controllers.Softwares.store()
+# Service page
+GET     /services                   controllers.ServiceController.index()
+GET     /services/create            controllers.ServiceController.create()
+POST    /services/create            controllers.ServiceController.store()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

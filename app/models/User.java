@@ -30,7 +30,7 @@ public class User extends Model {
     public List<Workflow> workflows;
 
     @OneToMany(cascade = CascadeType.ALL)
-    public List<Software> softwares;
+    public List<Service> services;
 
     public static Finder<Long, User> find = new Finder<Long, User>(
             Long.class, User.class

@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Created by shbekti on 4/13/15.
  */
-public class Workflows extends Controller {
+public class WorkflowController extends Controller {
 
     /**
      * Index page.
@@ -56,9 +56,9 @@ public class Workflows extends Controller {
         workflow.owner = User.find.where().eq("email", request().username()).findUnique();
         workflow.save();
 
-        flash("success", "New workflow has been created.");
+        flash("success", "A new workflow has been created.");
         return redirect(
-                routes.Workflows.index()
+                routes.WorkflowController.index()
         );
     }
 
