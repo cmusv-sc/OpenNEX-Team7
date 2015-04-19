@@ -53,7 +53,7 @@ public class ServiceController extends Controller {
         }
 
         Service service = serviceForm.get();
-        service.owner = User.find.where().eq("email", request().username()).findUnique();
+        service.user = User.find.where().eq("email", request().username()).findUnique();
         service.save();
 
         flash("success", "A new service has been created.");

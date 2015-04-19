@@ -1,19 +1,23 @@
-@(form: Form[User])
+@(id: Long, form: Form[User])
 
-@main(title = "Sign Up") {
-    <h1>Sign Up</h1>
+@main(title = "Edit User") {
+    <h1>Edit User</h1>
 
-    @helper.form(action = routes.UserController.store) {
+@if(form.hasGlobalErrors) {
+<p class="error">
+    @form.globalError.message
+</p>
+}
+
+    @helper.form(action = routes.UserController.update(id)) {
         <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" placeholder="Email" value="@form("email").value" class="form-control">
+            @helper.inputText(form("email"), '_showConstraints -> false, '_label -> "Email", 'placeholder -> "Email", 'class -> "form-control")
         </div>
         <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" placeholder="Password" class="form-control">
+            @helper.inputPassword(form("password"), '_showConstraints -> false, '_label -> "Password", 'placeholder -> "Password", 'value -> form("password").value, 'class -> "form-control")
         </div>
         <div class="form-group">
-            <button type="submit" class="btn btn-success">Submit</button>
+            <button type="submit" class="btn btn-success">Update</button>
         </div>
     }
 

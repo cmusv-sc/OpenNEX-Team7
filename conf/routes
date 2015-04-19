@@ -9,8 +9,14 @@ GET     /                           controllers.Application.index()
 GET     /signin                     controllers.UserController.signIn()
 POST    /signin                     controllers.UserController.authenticate()
 GET     /signout                    controllers.UserController.signOut()
-GET     /signup                     controllers.UserController.signUp()
-POST    /signup                     controllers.UserController.store()
+
+# User page
+GET     /users                      controllers.UserController.index()
+GET     /users/create               controllers.UserController.create()
+POST    /users/create               controllers.UserController.save()
+GET     /users/:id                  controllers.UserController.show(id : Long)
+POST    /users/:id/update           controllers.UserController.update(id : Long)
+POST    /users/:id/delete           controllers.UserController.delete(id : Long)
 
 # Workflow page
 GET     /workflows                  controllers.WorkflowController.index()

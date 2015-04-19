@@ -1,13 +1,21 @@
 package controllers;
 
 import models.User;
-import play.data.Form;
+//import play.data.Form;
+import patches.GroupedForm;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.Security;
+import views.html.errors.error404;
+import views.html.users.edit;
 import views.html.users.signin;
 import views.html.users.signup;
+import views.html.users.index;
 
-import static play.data.Form.form;
+import java.util.List;
+
+//import static play.data.Form.form;
+import static patches.GroupedForm.form;
 
 /**
  * Created by shbekti on 4/13/15.
@@ -27,25 +35,15 @@ public class UserController extends Controller {
      * Handle login form submission.
      */
     public static Result authenticate() {
-        Form<User> signInForm = form(User.class).bindFromRequest();
+        GroupedForm<User> form = form(User.class, User.SignIn.class).bindFromRequest();
 
-        if (signInForm.hasErrors()) {
-            flash("error", signInForm.errors().toString());
-            return badRequest(signin.render(signInForm));
-        }
-
-        String email = signInForm.get().email;
-        String password = signInForm.get().password;
-
-        User checkUser = User.get(email, password);
-
-        if (checkUser == null) {
-            flash("error", "Invalid email or password.");
-            return badRequest(signin.render(signInForm));
+        if (form.hasErrors()) {
+            return badRequest(signin.render(form));
         }
 
         session().clear();
-        session("email", email);
+        session("email", form.get().email);
+
         return redirect(
                 routes.Application.index()
         );
@@ -56,40 +54,111 @@ public class UserController extends Controller {
      */
     public static Result signOut() {
         session().clear();
-        flash("success", "You've been signed out out.");
+        flash("success", "You've been signed out.");
+
         return redirect(
                 routes.UserController.signIn()
         );
     }
 
     /**
-     * Sign up page.
+     * Index page.
      */
-    public static Result signUp() {
+    @Security.Authenticated(Secured.class)
+    public static Result index() {
+        List<User> users = User.find.all();
+
+        return ok(
+                index.render(users)
+        );
+    }
+
+    /**
+     * Create page.
+     */
+    public static Result create() {
         return ok(
                 signup.render(form(User.class))
         );
     }
 
     /**
-     * Handle sign up form submission.
+     * Handle create form submission.
      */
-    public static Result store() {
-        Form<User> signUpForm = form(User.class).bindFromRequest();
+    public static Result save() {
+        GroupedForm<User> form = form(User.class, User.SignUp.class).bindFromRequest();
 
-        if (signUpForm.hasErrors()) {
-            flash("error", signUpForm.errors().toString());
-            return badRequest(signup.render(signUpForm));
+        if (form.hasErrors()) {
+            return badRequest(signup.render(form));
         }
 
-        User user = new User();
-        user.email = signUpForm.get().email;
-        user.password = signUpForm.get().password;
+        User user = form.get();
         user.save();
 
         flash("success", "A new user has been created.");
+
         return redirect(
                 routes.UserController.signIn()
+        );
+    }
+
+    /**
+     * Edit page.
+     */
+    @Security.Authenticated(Secured.class)
+    public static Result show(Long id) {
+        User user = User.find.byId(id);
+
+        if (user == null) {
+            return notFound(
+                error404.render()
+            );
+        }
+
+        GroupedForm<User> form = form(User.class).fill(user);
+
+        return ok(
+                edit.render(id, form)
+        );
+    }
+
+    /**
+     * Handle update form submission.
+     */
+    @Security.Authenticated(Secured.class)
+    public static Result update(Long id) {
+        GroupedForm<User> form = form(User.class, User.Update.class).bindFromRequest();
+
+        if (form.hasErrors()) {
+            return badRequest(edit.render(id, form));
+        }
+
+        form.get().update(id);
+
+        flash("success", "The user has been updated.");
+
+        return redirect(
+                routes.UserController.index()
+        );
+    }
+
+    /**
+     * Delete page.
+     */
+    @Security.Authenticated(Secured.class)
+    public static Result delete(Long id) {
+        User user = User.find.ref(id);
+
+        if (user == null) {
+            return badRequest();
+        }
+
+        user.delete();
+
+        flash("success", "The user has been deleted.");
+
+        return redirect(
+                routes.UserController.index()
         );
     }
 }

@@ -1,21 +1,21 @@
-@(workflows: List[Workflow])
+@(users: List[User])
 
-@main(title = "Workflows") {
-    <h1>Workflows <a class="btn btn-success" href="@routes.WorkflowController.create" role="button">Add New</a></h1>
+@main(title = "Users") {
+    <h1>Users</h1>
 
     <table class="table table-striped">
         <tr>
             <td>ID</td>
-            <td>Name</td>
-            <td>Description</td>
-            <td>Owner</td>
+            <td>Email</td>
+            <td>Password</td>
+            <td>Actions</td>
         </tr>
-        @for(workflow <- workflows){
+        @for(user <- users){
         <tr>
-            <td>@workflow.id</td>
-            <td>@workflow.name</td>
-            <td>@workflow.description</td>
-            <td>@workflow.owner.email</td>
+            <td>@user.id</td>
+            <td>@user.email</td>
+            <td>@user.password</td>
+            <td>@helper.form(routes.UserController.delete(user.id)) {<a href="@routes.UserController.show(user.id)" class="btn btn-default">Edit</a> <button type="submit" class="btn btn-danger">Delete</button>}</td>
         </tr>
         }
     </table>

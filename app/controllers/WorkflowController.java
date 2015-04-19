@@ -53,7 +53,7 @@ public class WorkflowController extends Controller {
         }
 
         Workflow workflow = workflowForm.get();
-        workflow.owner = User.find.where().eq("email", request().username()).findUnique();
+        workflow.user = User.find.where().eq("email", request().username()).findUnique();
         workflow.save();
 
         flash("success", "A new workflow has been created.");

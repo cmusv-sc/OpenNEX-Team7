@@ -20,6 +20,7 @@
 <ul class="sidebar-nav bottom">
     <li>@request.username</li>
     @if(request.username != null) {
+    <li><a href="@routes.UserController.index">Users</a></li>
     <li><a href="@routes.UserController.signOut">Sign Out</a></li>
     } else {
     <li><a href="@routes.UserController.signIn">Sign In</a></li>

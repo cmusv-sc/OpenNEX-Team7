@@ -1,12 +1,11 @@
 package models;
 
 import play.data.validation.Constraints;
+import play.data.validation.ValidationError;
 import play.db.ebean.Model;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,10 +19,12 @@ public class User extends Model {
     @Constraints.Min(10)
     public Long id;
 
-    @Constraints.Required
+    @Constraints.Email
+    @Column(unique = true)
+    @Constraints.Required(groups = { SignIn.class, SignUp.class, Update.class })
     public String email;
 
-    @Constraints.Required
+    @Constraints.Required(groups = { SignIn.class, SignUp.class, Update.class })
     public String password;
 
     @OneToMany(cascade = CascadeType.ALL)
@@ -36,23 +37,41 @@ public class User extends Model {
             Long.class, User.class
     );
 
-    public static User get(String email, String password) {
+    public static User byEmail(String email) {
+        return find.where()
+                .eq("email", email)
+                .findUnique();
+    }
 
-        System.out.println(email + " " + password); // Check if form data is passed.
-
+    public static User byEmailAndPassword(String email, String password) {
         return find.where()
                 .eq("email", email)
                 .eq("password", password)
                 .findUnique();
-
     }
 
-    public String validate() {
-        if ((email == null) || (password == null)) {
-            return "Email or password cannot be blank.";
+    public List<ValidationError> validate(Class group) {
+        List<ValidationError> errors = new ArrayList<ValidationError>();
+
+        if (group == SignIn.class) {
+            User user = byEmailAndPassword(email, password);
+
+            if (user == null) {
+                errors.add(new ValidationError("", "Invalid email or password."));
+            }
+        } else if (group == SignUp.class) {
+            if (User.byEmail(email) != null) {
+                errors.add(new ValidationError("email", "This email is already registered."));
+            }
         }
 
-        return null;
+        return errors.isEmpty() ? null : errors;
     }
+
+    public interface SignIn { }
+
+    public interface SignUp { }
+
+    public interface Update { }
 
 }

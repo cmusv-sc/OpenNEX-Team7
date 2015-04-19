@@ -28,7 +28,7 @@ public class Service extends Model {
     public String url;
 
     @ManyToOne()
-    public User owner;
+    public User user;
 
     public static Finder<Long, Service> find = new Finder<Long, Service>(
             Long.class, Service.class
