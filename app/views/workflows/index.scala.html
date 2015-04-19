@@ -9,6 +9,7 @@
             <td>Name</td>
             <td>Description</td>
             <td>Owner</td>
+            <td>Actions</td>
         </tr>
         @for(workflow <- workflows){
         <tr>
@@ -16,6 +17,7 @@
             <td>@workflow.name</td>
             <td>@workflow.description</td>
             <td>@workflow.user.email</td>
+            <td>@helper.form(routes.WorkflowController.delete(workflow.id)) {<a href="@routes.WorkflowController.show(workflow.id)" class="btn btn-default">Edit</a> <button type="submit" class="btn btn-danger">Delete</button>}</td>
         </tr>
         }
     </table>

@@ -16,12 +16,12 @@ public class Workflow extends Model {
     @Constraints.Min(10)
     public Long id;
 
-    @Constraints.Required
+    @Constraints.Required(groups = { Create.class, Update.class })
     public String name;
 
     public String description;
 
-    @Constraints.Required
+    @Constraints.Required(groups = { Create.class, Update.class })
     public String content;
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -30,5 +30,9 @@ public class Workflow extends Model {
     public static Finder<Long, Workflow> find = new Finder<Long, Workflow>(
             Long.class, Workflow.class
     );
+
+    public interface Create { }
+
+    public interface Update { }
 
 }

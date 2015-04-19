@@ -1,13 +1,8 @@
 @(id: Long, form: Form[User])
 
 @main(title = "Edit User") {
+    @validations(form)
     <h1>Edit User</h1>
-
-@if(form.hasGlobalErrors) {
-<p class="error">
-    @form.globalError.message
-</p>
-}
 
     @helper.form(action = routes.UserController.update(id)) {
         <div class="form-group">

@@ -1,13 +1,8 @@
 @(form: Form[User])
 
 @main(title = "Sign Up") {
+    @validations(form)
     <h1>Sign Up</h1>
-
-@if(form.hasGlobalErrors) {
-<p class="error">
-    @form.globalError.message
-</p>
-}
 
     @helper.form(action = routes.UserController.save) {
         <div class="form-group">
