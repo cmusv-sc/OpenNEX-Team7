@@ -1,0 +1,22 @@
+@(workflows: List[Workflow])
+
+@main(title = "Workflows") {
+    <h1>Workflows <a class="btn btn-success" href="@routes.WorkflowController.create" role="button">Add New</a></h1>
+
+    <table class="table table-striped">
+        <tr>
+            <td>ID</td>
+            <td>Name</td>
+            <td>Description</td>
+            <td>Owner</td>
+        </tr>
+        @for(workflow <- workflows){
+        <tr>
+            <td>@workflow.id</td>
+            <td>@workflow.name</td>
+            <td>@workflow.description</td>
+            <td>@workflow.owner.email</td>
+        </tr>
+        }
+    </table>
+}
