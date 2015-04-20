@@ -1,15 +1,14 @@
 package controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import models.Service;
 import models.User;
-import models.Workflow;
 
+import models.json.ServiceNode;
+import models.json.WorkflowNode;
 import org.joda.time.DateTime;
 import patches.GroupedForm;
 import play.libs.F;
-import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -35,7 +34,7 @@ public class WorkflowController extends Controller {
      */
     @Security.Authenticated(Secured.class)
     public static Result index() {
-        List<Workflow> workflows = Workflow.find.all();
+        List<models.Workflow> workflows = models.Workflow.find.all();
 
         return ok(
                 index.render(workflows)
@@ -50,7 +49,7 @@ public class WorkflowController extends Controller {
         List<Service> services = Service.find.all();
 
         return ok(
-                create.render(form(Workflow.class), services)
+                create.render(form(models.Workflow.class), services)
         );
     }
 
@@ -59,14 +58,14 @@ public class WorkflowController extends Controller {
      */
     @Security.Authenticated(Secured.class)
     public static Result save() {
-        GroupedForm<Workflow> form = form(Workflow.class, Workflow.Create.class).bindFromRequest();
+        GroupedForm<models.Workflow> form = form(models.Workflow.class, models.Workflow.Create.class).bindFromRequest();
 
         if (form.hasErrors()) {
             List<Service> services = Service.find.all();
             return badRequest(create.render(form, services));
         }
 
-        Workflow workflow = form.get();
+        models.Workflow workflow = form.get();
         workflow.user = User.find.where().eq("email", request().username()).findUnique();
         workflow.save();
 
@@ -81,7 +80,7 @@ public class WorkflowController extends Controller {
      */
     @Security.Authenticated(Secured.class)
     public static Result show(Long id) {
-        Workflow workflow = Workflow.find.byId(id);
+        models.Workflow workflow = models.Workflow.find.byId(id);
 
         if (workflow == null) {
             return notFound(
@@ -90,7 +89,7 @@ public class WorkflowController extends Controller {
         }
 
         List<Service> services = Service.find.all();
-        GroupedForm<Workflow> form = form(Workflow.class).fill(workflow);
+        GroupedForm<models.Workflow> form = form(models.Workflow.class).fill(workflow);
 
         return ok(
                 edit.render(id, form, services)
@@ -102,7 +101,7 @@ public class WorkflowController extends Controller {
      */
     @Security.Authenticated(Secured.class)
     public static Result update(Long id) {
-        GroupedForm<Workflow> form = form(Workflow.class, Workflow.Update.class).bindFromRequest();
+        GroupedForm<models.Workflow> form = form(models.Workflow.class, models.Workflow.Update.class).bindFromRequest();
 
         if (form.hasErrors()) {
             List<Service> services = Service.find.all();
@@ -123,7 +122,7 @@ public class WorkflowController extends Controller {
      */
     @Security.Authenticated(Secured.class)
     public static Result delete(Long id) {
-        Workflow workflow = Workflow.find.ref(id);
+        models.Workflow workflow = models.Workflow.find.ref(id);
 
         if (workflow == null) {
             return badRequest();
@@ -143,7 +142,7 @@ public class WorkflowController extends Controller {
      */
     @Security.Authenticated(Secured.class)
     public static Result execute(Long id) {
-        Workflow workflow = Workflow.find.byId(id);
+        models.Workflow workflow = models.Workflow.find.byId(id);
 
         if (workflow == null) {
             return badRequest();
@@ -184,7 +183,7 @@ public class WorkflowController extends Controller {
                 out.write("Server time is now " + dt.toString());
 
 
-                Workflow workflow = Workflow.find.byId(id);
+                models.Workflow workflow = models.Workflow.find.byId(id);
 
                 if (workflow == null) {
                     out.write("Workflow not found. Closing connection.");
@@ -199,39 +198,21 @@ public class WorkflowController extends Controller {
                 ObjectMapper objectMapper = new ObjectMapper();
 
                 try {
-                    ServiceNode[] services = objectMapper.readValue(jsonString, ServiceNode[].class);
+                    WorkflowNode workflowNode = objectMapper.readValue(jsonString, WorkflowNode.class);
+                    List<ServiceNode> services = workflowNode.services;
 
-                    for (int i = 0; i < services.length; ++i) {
-                        out.write("Executing service: " + services[i].name);
+                    for (int i = 0; i < services.size(); ++i) {
+                        out.write("Executing service: " + services.get(i).name);
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
-                //JsonNode node = Json.parse(jsonString);
-                //out.write(node.toString());
-
-                /*
-                JSONObject object = new JSONObject(jsonString);
-
-                JSONArray services = object.getJSONArray("services");
-
-                for (int i = 0; i < services.length(); i++) {
-                    JSONObject service = services.getJSONObject(i);
-                    String name = service.getString("name");
-                    String url = service.getString("url");
-                    out.write("Executing service: " + name);
-                }
-                */
-
                 out.write("Workflow execution done.");
+                out.close();
             }
 
         };
     }
 
-    public class ServiceNode {
-        public Long id;
-        public String name;
-    }
 }
