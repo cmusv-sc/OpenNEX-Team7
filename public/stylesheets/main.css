@@ -133,3 +133,16 @@ body {
         margin-right: 0;
     }
 }
+
+.sortable-list > .btn {
+    margin-right: 5px;
+}
+
+#services-list-destination {
+    white-space: nowrap;
+    overflow-x: auto;
+}
+
+#services-list-destination .sortable-list {
+    height: 34px;
+}

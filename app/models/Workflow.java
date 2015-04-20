@@ -21,10 +21,11 @@ public class Workflow extends Model {
 
     public String description;
 
+    @Column(columnDefinition = "TEXT")
     @Constraints.Required(groups = { Create.class, Update.class })
     public String content;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     public User user;
 
     public static Finder<Long, Workflow> find = new Finder<Long, Workflow>(

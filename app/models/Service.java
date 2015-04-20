@@ -19,12 +19,12 @@ public class Service extends Model {
     @Constraints.Min(10)
     public Long id;
 
-    @Constraints.Required
+    @Constraints.Required(groups = { Create.class, Update.class })
     public String name;
 
     public String description;
 
-    @Constraints.Required
+    @Constraints.Required(groups = { Create.class, Update.class })
     public String url;
 
     @ManyToOne()
@@ -33,5 +33,9 @@ public class Service extends Model {
     public static Finder<Long, Service> find = new Finder<Long, Service>(
             Long.class, Service.class
     );
+
+    public interface Create { }
+
+    public interface Update { }
 
 }

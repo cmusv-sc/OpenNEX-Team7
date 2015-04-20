@@ -24,7 +24,7 @@ create table workflow (
   id                        bigint auto_increment not null,
   name                      varchar(255),
   description               varchar(255),
-  content                   varchar(255),
+  content                   TEXT,
   user_id                   bigint,
   constraint pk_workflow primary key (id))
 ;

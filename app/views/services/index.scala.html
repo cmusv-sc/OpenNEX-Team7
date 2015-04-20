@@ -9,6 +9,7 @@
             <td>Name</td>
             <td>Description</td>
             <td>Owner</td>
+            <td>Actions</td>
         </tr>
         @for(service <- services){
         <tr>
@@ -16,6 +17,7 @@
             <td>@service.name</td>
             <td>@service.description</td>
             <td>@service.user.email</td>
+            <td>@helper.form(routes.ServiceController.delete(service.id)) {<a href="@routes.ServiceController.show(service.id)" class="btn btn-default">Edit</a> <button type="submit" class="btn btn-danger">Delete</button>}</td>
         </tr>
         }
     </table>

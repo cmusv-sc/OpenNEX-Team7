@@ -1,5 +1,6 @@
 package controllers;
 
+import models.Service;
 import models.User;
 import models.Workflow;
 
@@ -38,8 +39,10 @@ public class WorkflowController extends Controller {
      */
     @Security.Authenticated(Secured.class)
     public static Result create() {
+        List<Service> services = Service.find.all();
+
         return ok(
-                create.render(form(Workflow.class))
+                create.render(form(Workflow.class), services)
         );
     }
 
@@ -51,7 +54,8 @@ public class WorkflowController extends Controller {
         GroupedForm<Workflow> form = form(Workflow.class, Workflow.Create.class).bindFromRequest();
 
         if (form.hasErrors()) {
-            return badRequest(create.render(form));
+            List<Service> services = Service.find.all();
+            return badRequest(create.render(form, services));
         }
 
         Workflow workflow = form.get();
@@ -77,10 +81,11 @@ public class WorkflowController extends Controller {
             );
         }
 
+        List<Service> services = Service.find.all();
         GroupedForm<Workflow> form = form(Workflow.class).fill(workflow);
 
         return ok(
-                edit.render(id, form)
+                edit.render(id, form, services)
         );
     }
 
@@ -92,7 +97,8 @@ public class WorkflowController extends Controller {
         GroupedForm<Workflow> form = form(Workflow.class, Workflow.Update.class).bindFromRequest();
 
         if (form.hasErrors()) {
-            return badRequest(edit.render(id, form));
+            List<Service> services = Service.find.all();
+            return badRequest(edit.render(id, form, services));
         }
 
         form.get().update(id);
@@ -118,6 +124,24 @@ public class WorkflowController extends Controller {
         workflow.delete();
 
         flash("success", "The workflow has been deleted.");
+
+        return redirect(
+                routes.WorkflowController.index()
+        );
+    }
+
+    /**
+     * Execute page.
+     */
+    @Security.Authenticated(Secured.class)
+    public static Result execute(Long id) {
+        Workflow workflow = Workflow.find.byId(id);
+
+        if (workflow == null) {
+            return badRequest();
+        }
+
+        flash("success", "The workflow has been executed.");
 
         return redirect(
                 routes.WorkflowController.index()

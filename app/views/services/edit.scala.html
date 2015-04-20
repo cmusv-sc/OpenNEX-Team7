@@ -1,11 +1,11 @@
-@(form: Form[Service])
+@(id: Long, form: Form[Service])
 
-@main(title = "Register New Service") {
+@main(title = "Edit Service") {
     @validations(form)
 
-    <h1>Register New Service</h1>
+    <h1>Edit Service</h1>
 
-    @helper.form(action = routes.ServiceController.save) {
+    @helper.form(action = routes.ServiceController.update(id)) {
         <div class="form-group">
             @helper.inputText(form("name"), '_showConstraints -> false, '_label -> "Name", 'placeholder -> "Name", 'class -> "form-control")
         </div>
@@ -19,4 +19,6 @@
             <button type="submit" class="btn btn-success">Submit</button>
         </div>
     }
+
 }
+

@@ -1,4 +1,4 @@
-@(id: Long, form: Form[Workflow])
+@(id: Long, form: Form[Workflow], services: List[Service])
 
 @main(title = "Edit Workflow") {
     @validations(form)
@@ -13,12 +13,83 @@
             @helper.inputText(form("description"), '_showConstraints -> false, '_label -> "Description", 'placeholder -> "Description", 'class -> "form-control")
         </div>
         <div class="form-group">
-            @helper.inputText(form("content"), '_showConstraints -> false, '_label -> "JSON Content", 'placeholder -> "JSON Content", 'class -> "form-control")
+            @helper.inputText(form("content"), '_showConstraints -> false, '_label -> "JSON Content", 'id -> "json-content", 'placeholder -> "JSON Content", 'class -> "form-control")
         </div>
+
+        <div class="form-group">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">VisualComposer™</h3>
+                </div>
+                <div class="panel-body">
+                    <h5>Available services</h5>
+                    <div id="services-list-source" class="well well-sm">
+                        <div class="sortable-list">@for(service <- services){<div data-sid="@service.id" class="btn btn-default">@service.name</div>}</div>
+                    </div>
+                    <h5>Selected services</h5>
+                    <div id="services-list-destination" class="well well-sm">
+                        <div class="sortable-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="form-group">
             <button type="submit" class="btn btn-success">Submit</button>
         </div>
     }
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var jsonString = $('#json-content').val();
+            var json = JSON.parse(jsonString);
+            var services = json.services;
+
+            var destinationElement = $('#services-list-destination .sortable-list');
+
+            for (var i = 0; i < services.length; ++i) {
+                destinationElement.append('<div data-sid="' + services[i].id + '" class="btn btn-default">' + services[i].name + '</div>');
+            }
+        });
+
+        $('.sortable-list').sortable({
+           connectWith: '#services-list-destination .sortable-list',
+            revert: true,
+            update: function(event, ui) {
+                var elements = $('#services-list-destination .sortable-list').children();
+                buildJSON(elements);
+            }
+        }).disableSelection();
+
+        $('.sortable-list div').draggable({
+            connectToSortable: '#services-list-destination .sortable-list',
+            helper : 'clone',
+            start: function(event, ui){
+                serviceId = $(this).attr('id');
+            },
+            stop: function(event, ui) {
+                ui.helper.attr('data-sid', serviceId);
+            }
+        });
+
+        function buildJSON(elements) {
+            var services = [];
+
+            elements.each(function(index) {
+                var service = {};
+                service.name = $(this).text();
+                service.id = $(this).attr('data-sid');
+                services.push(service);
+            });
+
+            var workflow = {};
+            workflow.services = services;
+
+            var jsonString = JSON.stringify(workflow);
+
+            $('#json-content').val(jsonString);
+        }
+    </script>
 
 }
 

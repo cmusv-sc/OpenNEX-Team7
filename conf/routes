@@ -25,11 +25,15 @@ POST    /workflows/create           controllers.WorkflowController.save()
 GET     /workflows/:id              controllers.WorkflowController.show(id : Long)
 POST    /workflows/:id/update       controllers.WorkflowController.update(id : Long)
 POST    /workflows/:id/delete       controllers.WorkflowController.delete(id : Long)
+GET     /workflows/:id/execute      controllers.WorkflowController.execute(id : Long)
 
 # Service page
 GET     /services                   controllers.ServiceController.index()
 GET     /services/create            controllers.ServiceController.create()
-POST    /services/create            controllers.ServiceController.store()
+POST    /services/create            controllers.ServiceController.save()
+GET     /services/:id               controllers.ServiceController.show(id : Long)
+POST    /services/:id/update        controllers.ServiceController.update(id : Long)
+POST    /services/:id/delete        controllers.ServiceController.delete(id : Long)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
