@@ -1,0 +1,65 @@
+@(workflow: Workflow)
+
+@main(title = "Edit Workflow") {
+    <h1>@workflow.name</h1>
+    <p>@workflow.description</p>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Real-Time Output Console</h3>
+        </div>
+        <div class="panel-body output-panel">
+            <div id="output" class="output-console"></div>
+        </div>
+    </div>
+
+    <script language="javascript" type="text/javascript">
+          var wsUri = "ws://@request.host@routes.WorkflowController.socket(workflow.id)";
+          var websocket;
+          var output;
+
+          $(document).ready(function() {
+              output = $('#output');
+              testWebSocket();
+          });
+
+          function testWebSocket() {
+              println("Connecting to server...");
+              websocket = new WebSocket(wsUri);
+              websocket.onopen = function(evt) { onOpen(evt) };
+              websocket.onclose = function(evt) { onClose(evt) };
+              websocket.onmessage = function(evt) { onMessage(evt) };
+              websocket.onerror = function(evt) { onError(evt) };
+          }
+
+          function onOpen(evt) {
+              println("Connected to OpenNEX Execution Server");
+          }
+
+          function onClose(evt) {
+              println("Disconnected");
+          }
+
+          function onMessage(evt) {
+              println(evt.data);
+          }
+
+          function onError(evt) {
+              println('ERROR: ' + evt.data);
+          }
+
+          function send(message) {
+              println("SENT: " + message);
+              websocket.send(message);
+          }
+
+          function println(message) {
+              var pre = document.createElement("p");
+              pre.style.wordWrap = "break-word";
+              pre.innerHTML = message;
+              output.append(pre);
+          }
+    </script>
+
+}
+

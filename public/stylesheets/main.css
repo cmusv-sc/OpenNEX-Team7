@@ -146,3 +146,15 @@ body {
 #services-list-destination .sortable-list {
     height: 34px;
 }
+
+.output-console {
+    color: #eee;
+    font-family: monospace;
+    background: #333;
+    padding: 1em;
+    overflow: auto
+}
+
+.output-panel {
+    padding: 0;
+}

@@ -1,20 +1,28 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import models.Service;
 import models.User;
 import models.Workflow;
 
+import org.joda.time.DateTime;
 import patches.GroupedForm;
+import play.libs.F;
+import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
+import play.mvc.WebSocket;
 import views.html.errors.error404;
 import views.html.workflows.edit;
 import views.html.workflows.index;
 import views.html.workflows.create;
+import views.html.workflows.execute;
 
 import static patches.GroupedForm.form;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -141,11 +149,89 @@ public class WorkflowController extends Controller {
             return badRequest();
         }
 
-        flash("success", "The workflow has been executed.");
-
-        return redirect(
-                routes.WorkflowController.index()
+        return ok(
+                execute.render(workflow)
         );
     }
 
+    /**
+     * WebSocket handler.
+     */
+    @Security.Authenticated(Secured.class)
+    public static WebSocket<String> socket(final Long id) {
+        return new WebSocket<String>() {
+
+            // Called when the Websocket Handshake is done.
+            public void onReady(WebSocket.In<String> in, WebSocket.Out<String> out) {
+
+                // For each event received on the socket,
+                in.onMessage(new F.Callback<String>() {
+                    public void invoke(String event) {
+                        // Log events to the console
+                        System.out.println(event);
+                    }
+                });
+
+                // When the socket is closed.
+                in.onClose(new F.Callback0() {
+                    public void invoke() {
+                        System.out.println("Disconnected");
+                    }
+                });
+
+                // Send a single 'Hello!' message
+                DateTime dt = new DateTime();
+                out.write("Server time is now " + dt.toString());
+
+
+                Workflow workflow = Workflow.find.byId(id);
+
+                if (workflow == null) {
+                    out.write("Workflow not found. Closing connection.");
+                    out.close();
+                }
+
+                out.write("Executing workflow: " + workflow.name);
+
+                String jsonString = workflow.content;
+                out.write(jsonString);
+
+                ObjectMapper objectMapper = new ObjectMapper();
+
+                try {
+                    ServiceNode[] services = objectMapper.readValue(jsonString, ServiceNode[].class);
+
+                    for (int i = 0; i < services.length; ++i) {
+                        out.write("Executing service: " + services[i].name);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                //JsonNode node = Json.parse(jsonString);
+                //out.write(node.toString());
+
+                /*
+                JSONObject object = new JSONObject(jsonString);
+
+                JSONArray services = object.getJSONArray("services");
+
+                for (int i = 0; i < services.length(); i++) {
+                    JSONObject service = services.getJSONObject(i);
+                    String name = service.getString("name");
+                    String url = service.getString("url");
+                    out.write("Executing service: " + name);
+                }
+                */
+
+                out.write("Workflow execution done.");
+            }
+
+        };
+    }
+
+    public class ServiceNode {
+        public Long id;
+        public String name;
+    }
 }

@@ -26,6 +26,7 @@ GET     /workflows/:id              controllers.WorkflowController.show(id : Lon
 POST    /workflows/:id/update       controllers.WorkflowController.update(id : Long)
 POST    /workflows/:id/delete       controllers.WorkflowController.delete(id : Long)
 GET     /workflows/:id/execute      controllers.WorkflowController.execute(id : Long)
+GET     /workflows/:id/socket       controllers.WorkflowController.socket(id : Long)
 
 # Service page
 GET     /services                   controllers.ServiceController.index()
