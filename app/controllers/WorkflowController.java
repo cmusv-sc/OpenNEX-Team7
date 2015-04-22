@@ -203,6 +203,9 @@ public class WorkflowController extends Controller {
 
                     for (int i = 0; i < services.size(); ++i) {
                         out.write("Executing service: " + services.get(i).name);
+                        Long serviceId = Long.parseLong(services.get(i).id);
+                        Service service = Service.find.byId(serviceId);
+                        // execute the real service
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
