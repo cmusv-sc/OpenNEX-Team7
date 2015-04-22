@@ -11,6 +11,7 @@ import views.html.errors.error404;
 import views.html.services.edit;
 import views.html.services.index;
 import views.html.services.create;
+import views.html.services.view;
 
 import static patches.GroupedForm.form;
 
@@ -83,6 +84,26 @@ public class ServiceController extends Controller {
                 edit.render(id, form)
         );
     }
+    /**
+     * Social view
+     */
+    @Security.Authenticated(Secured.class)
+    public static Result view(Long id) {
+        Service service = Service.find.byId(id);
+
+        if (service == null) {
+            return notFound(
+                    error404.render()
+            );
+        }
+
+        //GroupedForm<Service> form = form(Service.class).fill(service);
+
+        return ok(
+                view.render(id, service)
+        );
+    }
+
 
     /**
      * Handle update form submission.

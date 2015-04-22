@@ -36,6 +36,10 @@ GET     /services/:id               controllers.ServiceController.show(id : Long
 POST    /services/:id/update        controllers.ServiceController.update(id : Long)
 POST    /services/:id/delete        controllers.ServiceController.delete(id : Long)
 
+#Social network
+
+GET /social/services/:id            controllers.ServiceController.view(id : Long)
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
