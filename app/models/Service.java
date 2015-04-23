@@ -23,6 +23,14 @@ public class Service extends Model {
     public String name;
 
     public String description;
+    public String type;
+    public String license;
+    public String version;
+    public String credits;
+    public String attributes;
+    public String tags;
+    //optional
+    public String views;
 
     @Constraints.Required(groups = { Create.class, Update.class })
     public String url;
