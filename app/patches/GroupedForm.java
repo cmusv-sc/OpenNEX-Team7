@@ -77,7 +77,7 @@ public class GroupedForm<T> extends Form<T>{
      */
     @Retention(RUNTIME)
     @Target({ANNOTATION_TYPE})
-    public static @interface Display {
+    public @interface Display {
         String name();
         String[] attributes() default {};
     }

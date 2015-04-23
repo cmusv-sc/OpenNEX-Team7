@@ -38,6 +38,8 @@ public class Service extends Model {
     @ManyToOne()
     public User user;
 
+    // add hashset to keep track the users of the service
+
     public static Finder<Long, Service> find = new Finder<Long, Service>(
             Long.class, Service.class
     );
