@@ -54,15 +54,25 @@ public class ServiceController extends Controller {
         if (form.hasErrors()) {
             return badRequest(create.render(form));
         }
-
         Service service = form.get();
         service.user = User.find.where().eq("email", request().username()).findUnique();
+        setDefaultValues(service);
+
         service.save();
 
         flash("success", "A new service has been created.");
         return redirect(
                 routes.ServiceController.index()
         );
+    }
+
+    private static void setDefaultValues(Service service) {
+        service.credits=service.user.email;
+        service.license = "Creative Commons";
+        service.tags = "New";
+        service.version = "1.0";
+        service.views = "1";
+        service.type="service";
     }
 
     /**
