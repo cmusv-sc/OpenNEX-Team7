@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import models.Service;
 import models.User;
 
+import models.json.RequestNode;
 import models.json.ServiceNode;
 import models.json.WorkflowNode;
 import org.apache.commons.codec.binary.Base64;
@@ -12,12 +13,12 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.joda.time.DateTime;
 import patches.GroupedForm;
 import play.libs.F;
-import play.libs.ws.WS;
+import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -172,13 +173,67 @@ public class WorkflowController extends Controller {
         return new WebSocket<String>() {
 
             // Called when the Websocket Handshake is done.
-            public void onReady(WebSocket.In<String> in, WebSocket.Out<String> out) {
+            public void onReady(WebSocket.In<String> in, final WebSocket.Out<String> out) {
 
                 // For each event received on the socket,
                 in.onMessage(new F.Callback<String>() {
                     public void invoke(String event) {
                         // Log events to the console
                         System.out.println(event);
+
+                        models.Workflow workflow = models.Workflow.find.byId(id);
+
+                        if (workflow == null) {
+                            out.write("Workflow not found. Closing connection.");
+                            out.close();
+                        }
+
+                        out.write("Executing workflow: " + workflow.name);
+
+                        String jsonString = workflow.content;
+                        out.write(jsonString);
+
+                        ObjectMapper objectMapper = new ObjectMapper();
+
+                        try {
+                            WorkflowNode workflowNode = objectMapper.readValue(jsonString, WorkflowNode.class);
+                            List<ServiceNode> services = workflowNode.services;
+
+                            byte[] encodedBytes = Base64.encodeBase64(event.getBytes());
+                            String encodedString = new String(encodedBytes);
+
+                            String immediateResult = "{\"content\":\"" + encodedString + "\"" + "}";
+
+                            for (int i = 0; i < services.size(); ++i) {
+                                out.write("Executing service: " + services.get(i).name);
+                                Long serviceId = Long.parseLong(services.get(i).id);
+                                Service service = Service.find.byId(serviceId);
+                                // execute the real service
+
+                                HttpClient httpClient = HttpClientBuilder.create().build();
+                                HttpPost httpPost = new HttpPost(service.url);
+
+                                httpPost.setEntity(new StringEntity(immediateResult,
+                                        ContentType.create("application/json")));
+
+                                HttpResponse response = httpClient.execute(httpPost);
+
+                                String responseAsString = EntityUtils.toString(response.getEntity());
+                                immediateResult = responseAsString;
+                            }
+
+                            RequestNode requestNode = objectMapper.readValue(immediateResult, RequestNode.class);
+
+                            byte[] decodedBytes = Base64.decodeBase64(requestNode.content.getBytes());
+                            String decodedString = new String(decodedBytes);
+
+                            out.write("Output: " + decodedString);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        out.write("Workflow execution done.");
+                        //out.close();
                     }
                 });
 
@@ -192,55 +247,6 @@ public class WorkflowController extends Controller {
                 // Send a single 'Hello!' message
                 DateTime dt = new DateTime();
                 out.write("Server time is now " + dt.toString());
-
-                models.Workflow workflow = models.Workflow.find.byId(id);
-
-                if (workflow == null) {
-                    out.write("Workflow not found. Closing connection.");
-                    out.close();
-                }
-
-                out.write("Executing workflow: " + workflow.name);
-
-                String jsonString = workflow.content;
-                out.write(jsonString);
-
-                ObjectMapper objectMapper = new ObjectMapper();
-
-                try {
-                    WorkflowNode workflowNode = objectMapper.readValue(jsonString, WorkflowNode.class);
-                    List<ServiceNode> services = workflowNode.services;
-
-                    for (int i = 0; i < services.size(); ++i) {
-                        out.write("Executing service: " + services.get(i).name);
-                        Long serviceId = Long.parseLong(services.get(i).id);
-                        Service service = Service.find.byId(serviceId);
-                        // execute the real service
-
-                        byte[] encodedBytes = Base64.encodeBase64("Sammy".getBytes());
-                        String encodedString = new String(encodedBytes);
-
-                        HttpClient c = new DefaultHttpClient();
-                        HttpPost p = new HttpPost(service.url);
-
-                        p.setEntity(new StringEntity("{\"content\":\"" + encodedString + "\"" + "}",
-                                ContentType.create("application/json")));
-
-                        HttpResponse r = c.execute(p);
-
-                        BufferedReader rd = new BufferedReader(new InputStreamReader(r.getEntity().getContent()));
-                        String line;
-
-                        while ((line = rd.readLine()) != null) {
-                            System.out.println(line);
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                out.write("Workflow execution done.");
-                out.close();
             }
 
         };

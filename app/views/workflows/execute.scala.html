@@ -6,6 +6,22 @@
 
     <div class="panel panel-default">
         <div class="panel-heading">
+            <h3 class="panel-title">Execution Controls</h3>
+        </div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label for="data-input">Input:</label>
+                <textarea class="form-control" rows="5" id="data-input"></textarea>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" id="btn-execute" class="btn btn-success pull-right">Execute</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
             <h3 class="panel-title">Real-Time Output Console</h3>
         </div>
         <div class="panel-body output-panel">
@@ -20,10 +36,15 @@
 
           $(document).ready(function() {
               output = $('#output');
-              testWebSocket();
+              openWebSocket();
+
+              $("#btn-execute").click(function() {
+                var input = $("#data-input").val();
+                send(input);
+              });
           });
 
-          function testWebSocket() {
+          function openWebSocket() {
               println("Connecting to server...");
               websocket = new WebSocket(wsUri);
               websocket.onopen = function(evt) { onOpen(evt) };
@@ -49,7 +70,7 @@
           }
 
           function send(message) {
-              println("SENT: " + message);
+              println("Input: " + message);
               websocket.send(message);
           }
 
