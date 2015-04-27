@@ -1,9 +1,11 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import helpers.ServiceHelper;
 import models.Service;
 import models.User;
 
+import models.Workflow;
 import models.json.RequestNode;
 import models.json.ServiceNode;
 import models.json.WorkflowNode;
@@ -18,7 +20,6 @@ import org.apache.http.util.EntityUtils;
 import org.joda.time.DateTime;
 import patches.GroupedForm;
 import play.libs.F;
-import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -31,9 +32,7 @@ import views.html.workflows.execute;
 
 import static patches.GroupedForm.form;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -78,8 +77,7 @@ public class WorkflowController extends Controller {
         }
 
         models.Workflow workflow = form.get();
-        workflow.user = User.find.where().eq("email", request().username()).findUnique();
-        workflow.save();
+        subscribe(workflow);
 
         flash("success", "A new workflow has been created.");
         return redirect(
@@ -120,7 +118,13 @@ public class WorkflowController extends Controller {
             return badRequest(edit.render(id, form, services));
         }
 
+        Workflow workflow = Workflow.find.byId(id);
+        unsubscribe(workflow);
+
         form.get().update(id);
+
+        Workflow updatedWorkflow = Workflow.find.byId(id);
+        subscribe(updatedWorkflow);
 
         flash("success", "The workflow has been updated.");
 
@@ -140,6 +144,7 @@ public class WorkflowController extends Controller {
             return badRequest();
         }
 
+        unsubscribe(workflow);
         workflow.delete();
 
         flash("success", "The workflow has been deleted.");
@@ -250,6 +255,43 @@ public class WorkflowController extends Controller {
             }
 
         };
+    }
+
+    private static void subscribe(Workflow workflow) {
+        workflow.user = User.find.where().eq("email", request().username()).findUnique();
+        workflow.save();
+
+        String servicesJson = workflow.content;
+
+        List<Service> services = ServiceHelper.getUniqueServicesFromJson(servicesJson);
+
+        for (Service service : services) {
+            service.users.add(workflow.user);
+            service.save();
+        }
+    }
+
+    private static void unsubscribe(Workflow workflow) {
+        User user = workflow.user;
+        List<Workflow> userWorkflows = user.workflows;
+
+        HashSet<Service> otherWorkflowServices = new HashSet<>();
+
+        for (Workflow userWorkflow : userWorkflows) {
+            if (userWorkflow.id.equals(workflow.id)) continue;
+
+            List<Service> services = ServiceHelper.getUniqueServicesFromJson(userWorkflow.content);
+            otherWorkflowServices.addAll(services);
+        }
+
+        HashSet<Service> currentWorkflowServices = new HashSet<>(ServiceHelper.getUniqueServicesFromJson(workflow.content));
+
+        currentWorkflowServices.removeAll(otherWorkflowServices);
+
+        for (Service service : currentWorkflowServices) {
+            service.users.remove(workflow.user);
+            service.save();
+        }
     }
 
 }

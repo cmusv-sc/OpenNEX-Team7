@@ -7,6 +7,7 @@ import play.db.ebean.Model;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by shbekti on 4/12/15.
@@ -32,6 +33,9 @@ public class User extends Model {
 
     @OneToMany(cascade = CascadeType.ALL)
     public List<Service> services;
+
+    @ManyToMany
+    public Set<Service> subscriptions;
 
     // add the list of messages/notifications
 

@@ -16,6 +16,7 @@ import views.html.services.view;
 import static patches.GroupedForm.form;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by shbekti on 4/13/15.
@@ -126,7 +127,13 @@ public class ServiceController extends Controller {
             return badRequest(edit.render(id, form));
         }
 
-        form.get().update(id);
+        Service originalService = Service.find.byId(id);
+        Set<User> users = originalService.users;
+
+        Service service = form.get();
+        service.users = users;
+        service.update(id);
+        service.notifyUsers("UPDATED!!!!!!");
 
         flash("success", "The service has been updated.");
 
@@ -146,6 +153,9 @@ public class ServiceController extends Controller {
             return badRequest();
         }
 
+        service.notifyUsers("DELETED!!!!!!!!");
+        service.users.clear();
+        service.save();
         service.delete();
 
         flash("success", "The service has been deleted.");
