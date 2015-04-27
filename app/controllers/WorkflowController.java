@@ -6,9 +6,18 @@ import models.User;
 
 import models.json.ServiceNode;
 import models.json.WorkflowNode;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.joda.time.DateTime;
 import patches.GroupedForm;
 import play.libs.F;
+import play.libs.ws.WS;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -21,7 +30,9 @@ import views.html.workflows.execute;
 
 import static patches.GroupedForm.form;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 
 /**
@@ -182,7 +193,6 @@ public class WorkflowController extends Controller {
                 DateTime dt = new DateTime();
                 out.write("Server time is now " + dt.toString());
 
-
                 models.Workflow workflow = models.Workflow.find.byId(id);
 
                 if (workflow == null) {
@@ -206,6 +216,24 @@ public class WorkflowController extends Controller {
                         Long serviceId = Long.parseLong(services.get(i).id);
                         Service service = Service.find.byId(serviceId);
                         // execute the real service
+
+                        byte[] encodedBytes = Base64.encodeBase64("Sammy".getBytes());
+                        String encodedString = new String(encodedBytes);
+
+                        HttpClient c = new DefaultHttpClient();
+                        HttpPost p = new HttpPost(service.url);
+
+                        p.setEntity(new StringEntity("{\"content\":\"" + encodedString + "\"" + "}",
+                                ContentType.create("application/json")));
+
+                        HttpResponse r = c.execute(p);
+
+                        BufferedReader rd = new BufferedReader(new InputStreamReader(r.getEntity().getContent()));
+                        String line;
+
+                        while ((line = rd.readLine()) != null) {
+                            System.out.println(line);
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

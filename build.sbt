@@ -18,5 +18,7 @@ libraryDependencies ++= Seq(
   "org.webjars" % "bootstrap" % "3.1.1-2",
   "org.webjars" % "jquery" % "2.1.3",
   "org.webjars" % "jquery-ui" % "1.11.4",
-  "mysql" % "mysql-connector-java" % "5.1.35"
+  "mysql" % "mysql-connector-java" % "5.1.35",
+  "commons-codec" % "commons-codec" % "1.10",
+  "org.apache.httpcomponents" % "httpclient" % "4.4.1"
 )
