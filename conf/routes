@@ -39,7 +39,11 @@ POST    /services/:id/delete        controllers.ServiceController.delete(id : Lo
 
 #Social network
 
-GET /social/services/:id            controllers.ServiceController.view(id : Long)
+GET     /social/services/:id        controllers.ServiceController.view(id : Long)
+
+
+# Dummy services
+POST    /api/v1/sort                controllers.DummyServices.sort()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
