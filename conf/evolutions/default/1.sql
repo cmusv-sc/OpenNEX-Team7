@@ -4,26 +4,26 @@
 # --- !Ups
 
 create table execution_result (
-  id                        bigint auto_increment not null,
+  id                        bigint not null,
   workflow_id               bigint,
   input                     TEXT,
   output                    TEXT,
-  timestamp                 datetime,
+  timestamp                 timestamp,
   executor_id               bigint,
   constraint pk_execution_result primary key (id))
 ;
 
 create table notification (
-  id                        bigint auto_increment not null,
+  id                        bigint not null,
   user_id                   bigint,
   sender                    varchar(255),
   message                   varchar(255),
-  timestamp                 datetime,
+  timestamp                 timestamp,
   constraint pk_notification primary key (id))
 ;
 
 create table service (
-  id                        bigint auto_increment not null,
+  id                        bigint not null,
   name                      varchar(255),
   description               varchar(255),
   type                      varchar(255),
@@ -39,7 +39,7 @@ create table service (
 ;
 
 create table user (
-  id                        bigint auto_increment not null,
+  id                        bigint not null,
   email                     varchar(255),
   password                  varchar(255),
   constraint uq_user_email unique (email),
@@ -47,7 +47,7 @@ create table user (
 ;
 
 create table workflow (
-  id                        bigint auto_increment not null,
+  id                        bigint not null,
   name                      varchar(255),
   description               varchar(255),
   content                   TEXT,
@@ -61,6 +61,16 @@ create table user_service (
   service_id                     bigint not null,
   constraint pk_user_service primary key (user_id, service_id))
 ;
+create sequence execution_result_seq;
+
+create sequence notification_seq;
+
+create sequence service_seq;
+
+create sequence user_seq;
+
+create sequence workflow_seq;
+
 alter table execution_result add constraint fk_execution_result_workflow_1 foreign key (workflow_id) references workflow (id) on delete restrict on update restrict;
 create index ix_execution_result_workflow_1 on execution_result (workflow_id);
 alter table execution_result add constraint fk_execution_result_executor_2 foreign key (executor_id) references user (id) on delete restrict on update restrict;
@@ -80,19 +90,29 @@ alter table user_service add constraint fk_user_service_service_02 foreign key (
 
 # --- !Downs
 
-SET FOREIGN_KEY_CHECKS=0;
+SET REFERENTIAL_INTEGRITY FALSE;
 
-drop table execution_result;
+drop table if exists execution_result;
 
-drop table notification;
+drop table if exists notification;
 
-drop table service;
+drop table if exists service;
 
-drop table user_service;
+drop table if exists user_service;
 
-drop table user;
+drop table if exists user;
 
-drop table workflow;
+drop table if exists workflow;
 
-SET FOREIGN_KEY_CHECKS=1;
+SET REFERENTIAL_INTEGRITY TRUE;
+
+drop sequence if exists execution_result_seq;
+
+drop sequence if exists notification_seq;
+
+drop sequence if exists service_seq;
+
+drop sequence if exists user_seq;
+
+drop sequence if exists workflow_seq;
 
