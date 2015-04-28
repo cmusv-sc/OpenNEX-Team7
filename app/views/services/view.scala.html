@@ -1,9 +1,9 @@
 @(id: Long, service: Service)
 
-@main(title = "Service"){
+@main(title = service.name){
 <div class="container">
-    <h2>Service Details</h2>
-    <p>All you need to know about the service</p>
+    <h2>@service.name</h2>
+    <p>@service.description</p>
     <table class="table">
         <thead>
         <tr>

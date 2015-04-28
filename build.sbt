@@ -20,5 +20,6 @@ libraryDependencies ++= Seq(
   "org.webjars" % "jquery-ui" % "1.11.4",
   "mysql" % "mysql-connector-java" % "5.1.35",
   "commons-codec" % "commons-codec" % "1.10",
-  "org.apache.httpcomponents" % "httpclient" % "4.4.1"
+  "org.apache.httpcomponents" % "httpclient" % "4.4.1",
+  "org.ocpsoft.prettytime" % "prettytime" % "4.0.0.Final"
 )

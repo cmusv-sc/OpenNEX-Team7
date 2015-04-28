@@ -3,6 +3,15 @@
 
 # --- !Ups
 
+create table execution_result (
+  id                        bigint auto_increment not null,
+  workflow_id               bigint,
+  input                     varchar(255),
+  output                    varchar(255),
+  timestamp                 datetime,
+  constraint pk_execution_result primary key (id))
+;
+
 create table notification (
   id                        bigint auto_increment not null,
   user_id                   bigint,
@@ -51,12 +60,14 @@ create table user_service (
   service_id                     bigint not null,
   constraint pk_user_service primary key (user_id, service_id))
 ;
-alter table notification add constraint fk_notification_user_1 foreign key (user_id) references user (id) on delete restrict on update restrict;
-create index ix_notification_user_1 on notification (user_id);
-alter table service add constraint fk_service_user_2 foreign key (user_id) references user (id) on delete restrict on update restrict;
-create index ix_service_user_2 on service (user_id);
-alter table workflow add constraint fk_workflow_user_3 foreign key (user_id) references user (id) on delete restrict on update restrict;
-create index ix_workflow_user_3 on workflow (user_id);
+alter table execution_result add constraint fk_execution_result_workflow_1 foreign key (workflow_id) references workflow (id) on delete restrict on update restrict;
+create index ix_execution_result_workflow_1 on execution_result (workflow_id);
+alter table notification add constraint fk_notification_user_2 foreign key (user_id) references user (id) on delete restrict on update restrict;
+create index ix_notification_user_2 on notification (user_id);
+alter table service add constraint fk_service_user_3 foreign key (user_id) references user (id) on delete restrict on update restrict;
+create index ix_service_user_3 on service (user_id);
+alter table workflow add constraint fk_workflow_user_4 foreign key (user_id) references user (id) on delete restrict on update restrict;
+create index ix_workflow_user_4 on workflow (user_id);
 
 
 
@@ -67,6 +78,8 @@ alter table user_service add constraint fk_user_service_service_02 foreign key (
 # --- !Downs
 
 SET FOREIGN_KEY_CHECKS=0;
+
+drop table execution_result;
 
 drop table notification;
 

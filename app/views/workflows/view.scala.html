@@ -1,0 +1,29 @@
+@(id: Long, workflow: Workflow)
+
+@main(title = workflow.name){
+<div class="container">
+    <h1>@workflow.name</h1>
+    <p>@workflow.description</p>
+    <h3>Past Execution Results</h3>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Input</th>
+            <th>Output</th>
+            <th>Timestamp</th>
+        </tr>
+        </thead>
+        <tbody>
+        @for(result <- workflow.results){
+        <tr>
+            <td>@result.id</td>
+            <td>@result.input</td>
+            <td>@result.output</td>
+            <td>@result.timestamp</td>
+        </tr>
+        }
+        </tbody>
+    </table>
+</div>
+}

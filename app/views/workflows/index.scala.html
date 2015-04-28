@@ -14,7 +14,7 @@
         @for(workflow <- workflows){
         <tr>
             <td>@workflow.id</td>
-            <td>@workflow.name</td>
+            <td><a href="@routes.WorkflowController.view(workflow.id)">@workflow.name</a></td>
             <td>@workflow.description</td>
             <td>@workflow.user.email</td>
             <td>@helper.form(routes.WorkflowController.delete(workflow.id)) {<a href="@routes.WorkflowController.execute(workflow.id)" class="btn btn-default">Execute</a> <a href="@routes.WorkflowController.show(workflow.id)" class="btn btn-default">Edit</a> <button type="submit" class="btn btn-danger">Delete</button>}</td>

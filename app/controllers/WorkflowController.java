@@ -2,6 +2,7 @@ package controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import helpers.ServiceHelper;
+import models.ExecutionResult;
 import models.Service;
 import models.User;
 
@@ -29,6 +30,7 @@ import views.html.workflows.edit;
 import views.html.workflows.index;
 import views.html.workflows.create;
 import views.html.workflows.execute;
+import views.html.workflows.view;
 
 import static patches.GroupedForm.form;
 
@@ -171,6 +173,24 @@ public class WorkflowController extends Controller {
     }
 
     /**
+     * Results view
+     */
+    @Security.Authenticated(Secured.class)
+    public static Result view(Long id) {
+        Workflow workflow = Workflow.find.byId(id);
+
+        if (workflow == null) {
+            return notFound(
+                    error404.render()
+            );
+        }
+
+        return ok(
+                view.render(id, workflow)
+        );
+    }
+
+    /**
      * WebSocket handler.
      */
     @Security.Authenticated(Secured.class)
@@ -233,12 +253,18 @@ public class WorkflowController extends Controller {
                             String decodedString = new String(decodedBytes);
 
                             out.write("Output: " + decodedString);
+
+                            ExecutionResult result = new ExecutionResult();
+                            result.input = event;
+                            result.output = decodedString;
+                            result.timestamp = DateTime.now();
+                            workflow.results.add(result);
+                            workflow.save();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
 
                         out.write("Workflow execution done.");
-                        //out.close();
                     }
                 });
 

@@ -5,6 +5,8 @@ import javax.persistence.*;
 import play.db.ebean.*;
 import play.data.validation.*;
 
+import java.util.List;
+
 /**
  * Created by shbekti on 4/12/15.
  */
@@ -27,6 +29,9 @@ public class Workflow extends Model {
 
     @ManyToOne()
     public User user;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    public List<ExecutionResult> results;
 
     public static Finder<Long, Workflow> find = new Finder<Long, Workflow>(
             Long.class, Workflow.class
