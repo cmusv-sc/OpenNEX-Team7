@@ -27,6 +27,12 @@ public class DummyServices extends Controller {
         String decodedString = new String(decodedBytes);
 
         String[] lines = decodedString.split("\n");
+
+        int length = lines.length;
+        for(int i=0; i<length; i++) {
+            lines[i] = shift(lines[i]);
+        }
+
         Arrays.sort(lines);
 
         String joinedString = StringUtils.join(lines, "\n");
@@ -37,6 +43,23 @@ public class DummyServices extends Controller {
         String jsonResponse = "{\"content\":\"" + encodedString + "\"" + "}";
 
         return ok(jsonResponse);
+    }
+
+    public static String shift(String input) {
+        char[] forRet = input.toCharArray();
+        int len = forRet.length;
+        for(int i = 0; i<len; i++) {
+            char ch = forRet[i];
+            if(ch >= 97) {
+                forRet[i] = (char)((int)(ch)  - 32);
+                System.out.println("before:" + ch +", After:" + forRet[i]);
+            }
+            else {
+                forRet[i] = (char)((int)(ch)  + 32);
+                System.out.println("before:" + ch +", After:" + forRet[i]);
+            }
+        }
+        return new String(forRet);
     }
 
 }
