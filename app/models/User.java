@@ -40,6 +40,9 @@ public class User extends Model {
     @OneToMany(cascade = CascadeType.ALL)
     public List<Notification> notifications;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    public List<ExecutionResult> executionResults;
+
     // add the list of messages/notifications
 
     public static Finder<Long, User> find = new Finder<Long, User>(

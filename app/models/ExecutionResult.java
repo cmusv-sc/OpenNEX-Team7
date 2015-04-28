@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -22,11 +23,16 @@ public class ExecutionResult extends Model {
     @ManyToOne()
     public Workflow workflow;
 
+    @Column(columnDefinition = "TEXT")
     public String input;
 
+    @Column(columnDefinition = "TEXT")
     public String output;
 
     public DateTime timestamp;
+
+    @ManyToOne()
+    public User executor;
 
     public static Finder<Long, ExecutionResult> find = new Finder<Long, ExecutionResult>(
             Long.class, ExecutionResult.class

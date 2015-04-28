@@ -204,8 +204,6 @@ public class WorkflowController extends Controller {
                 in.onMessage(new F.Callback<String>() {
                     public void invoke(String event) {
                         // Log events to the console
-                        System.out.println(event);
-
                         models.Workflow workflow = models.Workflow.find.byId(id);
 
                         if (workflow == null) {
@@ -258,6 +256,7 @@ public class WorkflowController extends Controller {
                             result.input = event;
                             result.output = decodedString;
                             result.timestamp = DateTime.now();
+                            result.executor = null;
                             workflow.results.add(result);
                             workflow.save();
                         } catch (Exception e) {
