@@ -43,6 +43,9 @@ public class Service extends Model {
     @ManyToMany(mappedBy = "subscriptions")
     public Set<User> users = new HashSet();
 
+    public DateTime createAt;
+    public DateTime modifiedAt;
+
     // add hashset to keep track the users of the service
 
     public static Finder<Long, Service> find = new Finder<Long, Service>(

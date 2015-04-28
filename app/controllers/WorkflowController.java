@@ -79,6 +79,8 @@ public class WorkflowController extends Controller {
         }
 
         models.Workflow workflow = form.get();
+        workflow.createAt = DateTime.now();
+        workflow.modifiedAt = workflow.createAt;
         subscribe(workflow);
 
         flash("success", "A new workflow has been created.");
@@ -122,8 +124,9 @@ public class WorkflowController extends Controller {
 
         Workflow workflow = Workflow.find.byId(id);
         unsubscribe(workflow);
-
-        form.get().update(id);
+        workflow = form.get();
+        workflow.modifiedAt = DateTime.now();
+        workflow.update(id);
 
         Workflow updatedWorkflow = Workflow.find.byId(id);
         subscribe(updatedWorkflow);

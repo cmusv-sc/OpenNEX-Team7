@@ -4,6 +4,45 @@
 <div class="container">
     <h1>@workflow.name</h1>
     <p>@workflow.description</p>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Properties</th>
+            <th>Details</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Name</td>
+            <td>@workflow.name</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>@workflow.description</td>
+        </tr>
+        <tr>
+            <td>Content</td>
+            <td>@workflow.content</td>
+        </tr>
+        <tr>
+            <td>Owner</td>
+            <td>@workflow.user.email</td>
+        </tr>
+        <tr>
+            <td>Version</td>
+            <td>@workflow.version</td>
+        </tr>
+        <tr>
+            <td>Created At</td>
+            <td>@workflow.createAt</td>
+        </tr>
+        <tr>
+            <td>Modified At</td>
+            <td>@workflow.modifiedAt</td>
+        </tr>
+
+        </tbody>
+    </table>
     <h3>Past Execution Results</h3>
     <table class="table">
         <thead>

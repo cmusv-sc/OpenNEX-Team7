@@ -2,6 +2,7 @@ package models;
 
 import javax.persistence.*;
 
+import org.joda.time.DateTime;
 import play.db.ebean.*;
 import play.data.validation.*;
 
@@ -29,6 +30,10 @@ public class Workflow extends Model {
 
     @ManyToOne()
     public User user;
+
+    public String version;
+    public DateTime createAt;
+    public DateTime modifiedAt;
 
     @OneToMany(cascade = CascadeType.ALL)
     public List<ExecutionResult> results;

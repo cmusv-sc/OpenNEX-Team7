@@ -35,6 +35,8 @@ create table service (
   views                     varchar(255),
   url                       varchar(255),
   user_id                   bigint,
+  create_at                 timestamp,
+  modified_at               timestamp,
   constraint pk_service primary key (id))
 ;
 
@@ -52,6 +54,9 @@ create table workflow (
   description               varchar(255),
   content                   TEXT,
   user_id                   bigint,
+  version                   varchar(255),
+  create_at                 timestamp,
+  modified_at               timestamp,
   constraint pk_workflow primary key (id))
 ;
 

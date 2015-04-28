@@ -3,6 +3,7 @@ package controllers;
 import models.Service;
 import models.User;
 
+import org.joda.time.DateTime;
 import patches.GroupedForm;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -57,6 +58,8 @@ public class ServiceController extends Controller {
         }
         Service service = form.get();
         service.user = User.find.where().eq("email", request().username()).findUnique();
+        service.createAt = DateTime.now();
+        service.modifiedAt = service.createAt;
         setDefaultValues(service);
 
         service.save();
@@ -133,7 +136,10 @@ public class ServiceController extends Controller {
         Set<User> users = originalService.users;
 
         Service service = form.get();
-        service.users = users;
+        if (users.size() > 0) {
+            service.users = users;
+        }
+        service.modifiedAt = DateTime.now();
         service.update(id);
         service.notifyUsers("Service got updated.");
 
