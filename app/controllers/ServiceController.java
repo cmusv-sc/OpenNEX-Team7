@@ -133,7 +133,7 @@ public class ServiceController extends Controller {
         Service service = form.get();
         service.users = users;
         service.update(id);
-        service.notifyUsers("UPDATED!!!!!!");
+        service.notifyUsers("Service got updated.");
 
         flash("success", "The service has been updated.");
 
@@ -153,7 +153,7 @@ public class ServiceController extends Controller {
             return badRequest();
         }
 
-        service.notifyUsers("DELETED!!!!!!!!");
+        service.notifyUsers("Service got deleted.");
         service.users.clear();
         service.save();
         service.delete();

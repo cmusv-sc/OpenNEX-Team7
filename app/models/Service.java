@@ -1,5 +1,6 @@
 package models;
 
+import org.joda.time.DateTime;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
 
@@ -50,7 +51,12 @@ public class Service extends Model {
 
     public void notifyUsers(String message) {
         for (User user : users) {
-            System.out.println("NOTIFY: " + user.email + "  " + message);
+            Notification notification = new Notification();
+            notification.sender = this.name;
+            notification.message = message;
+            notification.timestamp = DateTime.now();
+            user.notifications.add(notification);
+            user.save();
         }
     }
 

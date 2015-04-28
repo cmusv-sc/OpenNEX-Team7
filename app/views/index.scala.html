@@ -1,4 +1,11 @@
+@(user: User)
+
 @main(title = "Home") {
 <h1>Welcome to OpenNEX</h1>
 <p>To begin, click one of the items on the navigation menu.</p>
+
+<h3>Notifications</h3>
+@for(notification <- user.notifications){
+<div class="alert alert-warning" role="alert"><strong>@notification.sender</strong> @notification.timestamp<br>@notification.message</div>
+}
 }

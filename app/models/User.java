@@ -37,6 +37,9 @@ public class User extends Model {
     @ManyToMany
     public Set<Service> subscriptions;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    public List<Notification> notifications;
+
     // add the list of messages/notifications
 
     public static Finder<Long, User> find = new Finder<Long, User>(

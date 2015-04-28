@@ -1,9 +1,12 @@
 package controllers;
 
+import models.Notification;
 import models.Service;
 import models.User;
 import play.mvc.*;
 import views.html.*;
+
+import java.util.List;
 
 public class Application extends Controller {
 
@@ -23,7 +26,9 @@ public class Application extends Controller {
         System.out.println(service.users);
         */
 
-        return ok(index.render());
+        User user = User.find.where().eq("email", request().username()).findUnique();
+
+        return ok(index.render(user));
     }
 
 }
