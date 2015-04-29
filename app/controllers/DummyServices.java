@@ -80,12 +80,6 @@ public class DummyServices extends Controller {
         String decodedString = new String(decodedBytes);
 
         String[] lines = decodedString.split("\n");
-
-        int length = lines.length;
-        for(int i=0; i<length; i++) {
-            lines[i] = shift(lines[i]);
-        }
-
         Arrays.sort(lines);
 
         String joinedString = StringUtils.join(lines, "\n");
