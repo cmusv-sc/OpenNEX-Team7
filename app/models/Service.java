@@ -41,7 +41,7 @@ public class Service extends Model {
     public User user;
 
     @ManyToMany(mappedBy = "subscriptions")
-    public Set<User> users = new HashSet();
+    public Set<User> users = new HashSet<User>();
 
     public DateTime createAt;
     public DateTime modifiedAt;
