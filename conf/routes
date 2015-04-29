@@ -23,7 +23,6 @@ GET     /workflows                  controllers.WorkflowController.index()
 GET     /workflows/create           controllers.WorkflowController.create()
 POST    /workflows/create           controllers.WorkflowController.save()
 GET     /workflows/:id              controllers.WorkflowController.show(id : Long)
-GET     /workflows/:id/view         controllers.WorkflowController.view(id : Long)
 POST    /workflows/:id/update       controllers.WorkflowController.update(id : Long)
 POST    /workflows/:id/delete       controllers.WorkflowController.delete(id : Long)
 GET     /workflows/:id/execute      controllers.WorkflowController.execute(id : Long)
@@ -40,6 +39,7 @@ POST    /services/:id/delete        controllers.ServiceController.delete(id : Lo
 #Social network
 
 GET     /social/services/:id        controllers.ServiceController.view(id : Long)
+GET     /social/workflows/:id       controllers.WorkflowController.view(id : Long)
 
 
 # Dummy services
