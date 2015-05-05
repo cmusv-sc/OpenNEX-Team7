@@ -1,6 +1,10 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import helpers.ServiceHelper;
 import models.ExecutionResult;
 import models.Service;
@@ -21,6 +25,7 @@ import org.apache.http.util.EntityUtils;
 import org.joda.time.DateTime;
 import patches.GroupedForm;
 import play.libs.F;
+import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -45,103 +50,86 @@ public class WorkflowController extends Controller {
     /**
      * Index page.
      */
-    @Security.Authenticated(Secured.class)
     public static Result index() {
         List<models.Workflow> workflows = models.Workflow.find.all();
-
-        return ok(
-                index.render(workflows)
-        );
-    }
-
-    /**
-     * Create page.
-     */
-    @Security.Authenticated(Secured.class)
-    public static Result create() {
-        List<Service> services = Service.find.all();
-
-        return ok(
-                create.render(form(models.Workflow.class), services)
-        );
+        ArrayNode result = new ArrayNode(JsonNodeFactory.instance);
+        for (Workflow w : workflows) {
+            ObjectNode o = Json.newObject();
+            o.put("id", w.id);
+            o.put("name", w.name);
+            o.put("description", w.description);
+            o.put("content", w.content);
+            o.put("useremail", w.user.email);
+            o.put("version", w.version);
+            o.put("createat", w.createAt.toString());
+            o.put("modifiedat", w.modifiedAt.toString());
+            result.add(o);
+        }
+        return ok(result);
     }
 
     /**
      * Handle create form submission.
      */
-    @Security.Authenticated(Secured.class)
     public static Result save() {
-        GroupedForm<models.Workflow> form = form(models.Workflow.class, models.Workflow.Create.class).bindFromRequest();
-
-        if (form.hasErrors()) {
-            List<Service> services = Service.find.all();
-            return badRequest(create.render(form, services));
-        }
-
-        models.Workflow workflow = form.get();
-        workflow.createAt = DateTime.now();
-        workflow.modifiedAt = workflow.createAt;
-        subscribe(workflow);
-
-        flash("success", "A new workflow has been created.");
-        return redirect(
-                routes.WorkflowController.index()
-        );
+        JsonNode node = request().body().asJson();
+        Workflow w = new Workflow();
+        w.user = User.find.where().eq("email", node.get("useremail").asText()).findUnique();
+        w.name = node.get("name").asText();
+        w.description = node.get("description").asText();
+        w.version = node.get("version").asText();
+        w.content = node.get("content").asText();
+        w.createAt = DateTime.now();
+        w.modifiedAt = w.createAt;
+        subscribe(w);
+        return ok();
     }
 
     /**
      * Edit page.
      */
-    @Security.Authenticated(Secured.class)
     public static Result show(Long id) {
-        models.Workflow workflow = models.Workflow.find.byId(id);
 
-        if (workflow == null) {
-            return notFound(
-                    error404.render()
-            );
+        Workflow w = Workflow.find.byId(id);
+
+        if (w == null) {
+            return notFound();
         }
-
-        List<Service> services = Service.find.all();
-        GroupedForm<models.Workflow> form = form(models.Workflow.class).fill(workflow);
-
-        return ok(
-                edit.render(id, form, services)
-        );
+        ObjectNode o = Json.newObject();
+        o.put("id", w.id);
+        o.put("name", w.name);
+        o.put("description", w.description);
+        o.put("version", w.version);
+        o.put("content", w.content);
+        o.put("createat", w.createAt.toString());
+        o.put("modifiedat", w.modifiedAt.toString());
+        return ok(o);
     }
 
     /**
      * Handle update form submission.
      */
-    @Security.Authenticated(Secured.class)
     public static Result update(Long id) {
-        GroupedForm<models.Workflow> form = form(models.Workflow.class, models.Workflow.Update.class).bindFromRequest();
 
-        if (form.hasErrors()) {
-            List<Service> services = Service.find.all();
-            return badRequest(edit.render(id, form, services));
-        }
-
-        Workflow workflow = Workflow.find.byId(id);
-        unsubscribe(workflow);
-        workflow = form.get();
-        workflow.modifiedAt = DateTime.now();
-        workflow.update(id);
-
+        Workflow w = Workflow.find.byId(id);
+        unsubscribe(w);
+        JsonNode node = request().body().asJson();
+        w = new Workflow();
+        w.user = User.find.where().eq("email", node.get("useremail").asText()).findUnique();
+        w.name = node.get("name").asText();
+        w.description = node.get("description").asText();
+        w.version = node.get("version").asText();
+        w.content = node.get("content").asText();
+        w.modifiedAt = DateTime.now();
+        w.update(id);
         Workflow updatedWorkflow = Workflow.find.byId(id);
         subscribe(updatedWorkflow);
-
-        flash("success", "The workflow has been updated.");
-
-        return redirect(
-                routes.WorkflowController.index()
-        );
+        return ok();
     }
 
     /**
      * Delete page.
      */
-    @Security.Authenticated(Secured.class)
     public static Result delete(Long id) {
         models.Workflow workflow = models.Workflow.find.ref(id);
 
@@ -152,33 +140,34 @@ public class WorkflowController extends Controller {
         unsubscribe(workflow);
         workflow.delete();
 
-        flash("success", "The workflow has been deleted.");
 
-        return redirect(
-                routes.WorkflowController.index()
-        );
+        return ok();
     }
 
     /**
      * Execute page.
      */
-    @Security.Authenticated(Secured.class)
     public static Result execute(Long id) {
-        models.Workflow workflow = models.Workflow.find.byId(id);
 
-        if (workflow == null) {
-            return badRequest();
+        Workflow w = Workflow.find.byId(id);
+
+        if (w == null) {
+            return notFound();
         }
-
-        return ok(
-                execute.render(workflow)
-        );
+        ObjectNode o = Json.newObject();
+        o.put("id", w.id);
+        o.put("name", w.name);
+        o.put("description", w.description);
+        o.put("version", w.version);
+        o.put("content", w.content);
+        o.put("createat", w.createAt.toString());
+        o.put("modifiedat", w.modifiedAt.toString());
+        return ok(o);
     }
 
     /**
      * Results view
      */
-    @Security.Authenticated(Secured.class)
     public static Result view(Long id) {
         Workflow workflow = Workflow.find.byId(id);
 
@@ -196,7 +185,6 @@ public class WorkflowController extends Controller {
     /**
      * WebSocket handler.
      */
-    @Security.Authenticated(Secured.class)
     public static WebSocket<String> socket(final Long id) {
         return new WebSocket<String>() {
 
@@ -286,7 +274,6 @@ public class WorkflowController extends Controller {
     }
 
     private static void subscribe(Workflow workflow) {
-        workflow.user = User.find.where().eq("email", request().username()).findUnique();
         workflow.save();
 
         String servicesJson = workflow.content;

@@ -1,5 +1,6 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 import play.db.ebean.Model;

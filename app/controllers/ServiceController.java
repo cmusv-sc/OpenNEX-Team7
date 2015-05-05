@@ -1,10 +1,16 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import models.Service;
 import models.User;
 
 import org.joda.time.DateTime;
 import patches.GroupedForm;
+import play.libs.Json;
+import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -27,47 +33,52 @@ public class ServiceController extends Controller {
     /**
      * Index page.
      */
-    @Security.Authenticated(Secured.class)
     public static Result index() {
         List<Service> services = Service.find.all();
-
-        return ok(
-                index.render(services)
-        );
-    }
-
-    /**
-     * Create page.
-     */
-    @Security.Authenticated(Secured.class)
-    public static Result create() {
-        return ok(
-                create.render(form(Service.class))
-        );
+        ArrayNode result = new ArrayNode(JsonNodeFactory.instance);
+        for (Service s : services) {
+            ObjectNode o = Json.newObject();
+            o.put("id", s.id);
+            o.put("name", s.name);
+            o.put("description", s.description);
+            o.put("type", s.type);
+            o.put("license", s.license);
+            o.put("version", s.version);
+            o.put("credits", s.credits);
+            o.put("attributes", s.attributes);
+            o.put("tags", s.tags);
+            o.put("views", s.views);
+            o.put("url", s.url);
+            o.put("useremail", s.user.email);
+            o.put("createat", s.createAt.toString());
+            o.put("modifiedat", s.modifiedAt.toString());
+            result.add(o);
+        }
+        return ok(result);
     }
 
     /**
      * Handle create form submission.
      */
-    @Security.Authenticated(Secured.class)
     public static Result save() {
-        GroupedForm<Service> form = form(Service.class, Service.Create.class).bindFromRequest();
-
-        if (form.hasErrors()) {
-            return badRequest(create.render(form));
-        }
-        Service service = form.get();
-        service.user = User.find.where().eq("email", request().username()).findUnique();
+        JsonNode node = request().body().asJson();
+        Service service = new Service();
+        service.user = User.find.where().eq("email", node.get("useremail").asText()).findUnique();
+        service.name = node.get("name").asText();
+        service.description = node.get("description").asText();
+        service.license = node.get("license").asText();
+        service.version = node.get("version").asText();
+        service.credits = node.get("credits").asText();
+        service.attributes = node.get("attributes").asText();
+        service.tags = node.get("tags").asText();
+        service.views = node.get("views").asText();
+        service.url = node.get("url").asText();
+        service.type = node.get("type").asText();
         service.createAt = DateTime.now();
         service.modifiedAt = service.createAt;
-        setDefaultValues(service);
 
         service.save();
-
-        flash("success", "A new service has been created.");
-        return redirect(
-                routes.ServiceController.index()
-        );
+        return ok();
     }
 
     private static void setDefaultValues(Service service) {
@@ -82,60 +93,52 @@ public class ServiceController extends Controller {
     /**
      * Edit page.
      */
-    @Security.Authenticated(Secured.class)
     public static Result show(Long id) {
-        Service service = Service.find.byId(id);
+        Service s = Service.find.byId(id);
 
-        if (service == null) {
-            return notFound(
-                    error404.render()
-            );
+        if (s == null) {
+            return notFound();
         }
-
-        GroupedForm<Service> form = form(Service.class).fill(service);
-
-        return ok(
-                edit.render(id, form)
-        );
-    }
-
-
-    /**
-     * Social view
-     */
-    @Security.Authenticated(Secured.class)
-    public static Result view(Long id) {
-        Service service = Service.find.byId(id);
-
-        if (service == null) {
-            return notFound(
-                    error404.render()
-            );
-        }
-
-        //GroupedForm<Service> form = form(Service.class).fill(service);
-
-        return ok(
-                view.render(id, service)
-        );
+        ObjectNode o = Json.newObject();
+        o.put("id", s.id);
+        o.put("name", s.name);
+        o.put("description", s.description);
+        o.put("type", s.type);
+        o.put("license", s.license);
+        o.put("version", s.version);
+        o.put("credits", s.credits);
+        o.put("attributes", s.attributes);
+        o.put("tags", s.tags);
+        o.put("views", s.views);
+        o.put("url", s.url);
+        o.put("useremail", s.user.email);
+        o.put("createat", s.createAt.toString());
+        o.put("modifiedat", s.modifiedAt.toString());
+        return ok(o);
     }
 
 
     /**
      * Handle update form submission.
      */
-    @Security.Authenticated(Secured.class)
     public static Result update(Long id) {
-        GroupedForm<Service> form = form(Service.class, Service.Update.class).bindFromRequest();
-
-        if (form.hasErrors()) {
-            return badRequest(edit.render(id, form));
-        }
 
         Service originalService = Service.find.byId(id);
         Set<User> users = originalService.users;
 
-        Service service = form.get();
+
+        JsonNode node = request().body().asJson();
+        Service service = new Service();
+        service.name = node.get("name").asText();
+        service.description = node.get("description").asText();
+        service.license = node.get("license").asText();
+        service.version = node.get("version").asText();
+        service.credits = node.get("credits").asText();
+        service.attributes = node.get("attributes").asText();
+        service.tags = node.get("tags").asText();
+        service.views = node.get("views").asText();
+        service.url = node.get("url").asText();
+
         if (users.size() > 0) {
             service.users = users;
         }
@@ -143,17 +146,12 @@ public class ServiceController extends Controller {
         service.update(id);
         service.notifyUsers("Service got updated.");
 
-        flash("success", "The service has been updated.");
-
-        return redirect(
-                routes.ServiceController.index()
-        );
+        return ok();
     }
 
     /**
      * Delete page.
      */
-    @Security.Authenticated(Secured.class)
     public static Result delete(Long id) {
         Service service = Service.find.ref(id);
 
@@ -166,11 +164,7 @@ public class ServiceController extends Controller {
         service.save();
         service.delete();
 
-        flash("success", "The service has been deleted.");
-
-        return redirect(
-                routes.ServiceController.index()
-        );
+        return ok();
     }
 
 }

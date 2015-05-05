@@ -5,7 +5,7 @@
 
     <h1>Edit Workflow</h1>
 
-    @helper.form(action = routes.WorkflowController.update(id)) {
+    @helper.form(action = routes.WorkflowWebController.update(id)) {
         <div class="form-group">
             @helper.inputText(form("name"), '_showConstraints -> false, '_label -> "Name", 'placeholder -> "Name", 'class -> "form-control")
         </div>

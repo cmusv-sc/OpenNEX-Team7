@@ -18,28 +18,43 @@ GET     /users/:id                  controllers.UserController.show(id : Long)
 POST    /users/:id/update           controllers.UserController.update(id : Long)
 POST    /users/:id/delete           controllers.UserController.delete(id : Long)
 
+# Workflow object
+GET     /ws/workflows                  controllers.WorkflowController.index()
+POST    /ws/workflows/create           controllers.WorkflowController.save()
+GET     /ws/workflows/:id              controllers.WorkflowController.show(id : Long)
+POST    /ws/workflows/:id/update       controllers.WorkflowController.update(id : Long)
+POST    /ws/workflows/:id/delete       controllers.WorkflowController.delete(id : Long)
+GET     /ws/workflows/:id/execute      controllers.WorkflowController.execute(id : Long)
+GET     /ws/workflows/:id/socket       controllers.WorkflowController.socket(id : Long)
+
 # Workflow page
-GET     /workflows                  controllers.WorkflowController.index()
-GET     /workflows/create           controllers.WorkflowController.create()
-POST    /workflows/create           controllers.WorkflowController.save()
-GET     /workflows/:id              controllers.WorkflowController.show(id : Long)
-POST    /workflows/:id/update       controllers.WorkflowController.update(id : Long)
-POST    /workflows/:id/delete       controllers.WorkflowController.delete(id : Long)
-GET     /workflows/:id/execute      controllers.WorkflowController.execute(id : Long)
-GET     /workflows/:id/socket       controllers.WorkflowController.socket(id : Long)
+GET     /workflows                  controllers.WorkflowWebController.index()
+GET     /workflows/create           controllers.WorkflowWebController.create()
+POST    /workflows/create           controllers.WorkflowWebController.save()
+GET     /workflows/:id              controllers.WorkflowWebController.show(id : Long)
+POST    /workflows/:id/update       controllers.WorkflowWebController.update(id : Long)
+POST    /workflows/:id/delete       controllers.WorkflowWebController.delete(id : Long)
+GET     /workflows/:id/execute      controllers.WorkflowWebController.execute(id : Long)
+
+# Service object
+GET     /ws/services                   controllers.ServiceController.index()
+POST    /ws/services/create            controllers.ServiceController.save()
+GET     /ws/services/:id               controllers.ServiceController.show(id : Long)
+POST    /ws/services/:id/update        controllers.ServiceController.update(id : Long)
+POST    /ws/services/:id/delete        controllers.ServiceController.delete(id : Long)
 
 # Service page
-GET     /services                   controllers.ServiceController.index()
-GET     /services/create            controllers.ServiceController.create()
-POST    /services/create            controllers.ServiceController.save()
-GET     /services/:id               controllers.ServiceController.show(id : Long)
-POST    /services/:id/update        controllers.ServiceController.update(id : Long)
-POST    /services/:id/delete        controllers.ServiceController.delete(id : Long)
+GET     /services                   controllers.ServiceWebController.index()
+GET     /services/create            controllers.ServiceWebController.create()
+POST    /services/create            controllers.ServiceWebController.save()
+GET     /services/:id               controllers.ServiceWebController.show(id : Long)
+POST    /services/:id/update        controllers.ServiceWebController.update(id : Long)
+POST    /services/:id/delete        controllers.ServiceWebController.delete(id : Long)
 
 #Social network
 
-GET     /social/services/:id        controllers.ServiceController.view(id : Long)
-GET     /social/workflows/:id       controllers.WorkflowController.view(id : Long)
+GET     /social/services/:id        controllers.ServiceWebController.view(id : Long)
+GET     /social/workflows/:id       controllers.WorkflowWebController.view(id : Long)
 
 
 # Dummy services

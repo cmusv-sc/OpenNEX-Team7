@@ -1,5 +1,6 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.joda.time.DateTime;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
